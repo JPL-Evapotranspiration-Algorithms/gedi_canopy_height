@@ -13,9 +13,9 @@ import rasters as rt
 from rasters import RasterGeometry, Raster
 
 CANOPY_COLORMAP = LinearSegmentedColormap.from_list(
-    name="NDVI",
+    name="canopy_height",
     colors=[
-        "#0000ff",
+        # "#0000ff",
         "#000000",
         "#745d1a",
         "#e1dea2",
@@ -36,7 +36,7 @@ class GEDICanopyHeight:
     logger = logging.getLogger(__name__)
 
     def __init__(self, source_directory: str):
-        self.source_directory = abspath(expanduser(source_directory))
+        self.source_directory = source_directory
 
     def __repr__(self) -> str:
         return f'GEDICanopyHeight(source_directory="{self.source_directory}")'
@@ -52,7 +52,7 @@ class GEDICanopyHeight:
         partial_filename = f"{filename}.download"
         command = f'wget -c -O "{partial_filename}" "{URL}"'
         download_start = perf_counter()
-        system(command)
+        # system(command)
         download_end = perf_counter()
         download_duration = download_end - download_start
         self.logger.info(f"completed download in {download_duration:0.2f} seconds: {filename}")
@@ -85,7 +85,7 @@ class GEDICanopyHeight:
     def source_filename(self, name: str) -> str:
         URL = self.source_URL(name)
         filename_base = posixpath.basename(URL)
-        filename = join(self.source_directory, filename_base)
+        filename = join(abspath(expanduser(self.source_directory)), filename_base)
 
         return filename
 
@@ -105,7 +105,7 @@ class GEDICanopyHeight:
 
     @property
     def VRT_filename(self):
-        return join(self.source_directory, "Forest_height_2019.vrt")
+        return join(abspath(expanduser(self.source_directory)), "Forest_height_2019.vrt")
 
     @property
     def VRT(self) -> str:
